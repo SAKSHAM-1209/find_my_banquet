@@ -1,5 +1,3 @@
-# settings.py (Production + Local ready)
-
 from pathlib import Path
 import os
 from dotenv import load_dotenv
@@ -11,18 +9,12 @@ load_dotenv()  # Automatically loads .env from project root
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 # ===== SECURITY =====
-SECRET_KEY = os.getenv('SECRET_KEY', 'django-insecure-fallback-secret-key-please-change')
+SECRET_KEY = os.getenv('SECRET_KEY', 'django-insecure-fallback-secret-key')
 DEBUG = os.getenv('DEBUG', 'False') == 'True'
 
-# Allowed Hosts
-ALLOWED_HOSTS = [
-    "findmybanquet.com",
-    "www.findmybanquet.com",
-    "banquet-render.onrender.com",  # exact Render URL
-    "127.0.0.1",
-    "localhost",
-]
-
+# ===== ALLOWED HOSTS =====
+# Read comma-separated string from .env and split into list
+ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS', '127.0.0.1,localhost').split(',')
 
 # ===== INSTALLED APPS =====
 INSTALLED_APPS = [
@@ -32,8 +24,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    # Your apps
-    'website',
+    'website',  # your app
 ]
 
 # ===== MIDDLEWARE =====
@@ -70,7 +61,6 @@ TEMPLATES = [
 WSGI_APPLICATION = 'Banquet.wsgi.application'
 
 # ===== DATABASE =====
-# Decide database dynamically based on environment
 if os.getenv('RENDER_ENV') == 'True':  # Render deployment
     DATABASES = {
         'default': {
@@ -96,20 +86,12 @@ else:  # Local dev
 
 # ===== PASSWORD VALIDATION =====
 AUTH_PASSWORD_VALIDATORS = [
-    {
-        'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
-    },
-    {
-        'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator',
-    },
-    {
-        'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator',
-    },
-    {
-        'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
-    },
+    {'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',},
+    {'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator',},
+    {'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator',},
+    {'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',},
 ]
-RENDER_ENV=True
+
 # ===== INTERNATIONALIZATION =====
 LANGUAGE_CODE = 'en-us'
 TIME_ZONE = 'Asia/Kolkata'
