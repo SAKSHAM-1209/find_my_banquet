@@ -1,3 +1,1 @@
-web:
-gunicorn
-Banquet.wsgi
+web: gunicorn Banquet.wsgi
