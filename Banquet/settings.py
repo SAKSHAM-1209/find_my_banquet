@@ -17,10 +17,20 @@ DEBUG = os.getenv('DEBUG', 'False').lower() in ('1', 'true', 'yes')
 ENVIRONMENT = os.getenv('ENVIRONMENT', 'local').lower()
 
 # ===== ALLOWED HOSTS =====
-ALLOWED_HOSTS = [host.strip() for host in os.getenv('ALLOWED_HOSTS', '127.0.0.1,localhost').split(',')]
+ALLOWED_HOSTS = [
+    '127.0.0.1',
+    'localhost',
+    'findmybanquet.com',
+    'www.findmybanquet.com',
+    'find-my-banquet-7hd8.onrender.com',  # Render live URL
+]
 
 # ===== CSRF TRUSTED ORIGINS =====
-CSRF_TRUSTED_ORIGINS = [origin.strip() for origin in os.getenv('CSRF_TRUSTED_ORIGINS', '').split(',')]
+CSRF_TRUSTED_ORIGINS = [
+    'https://findmybanquet.com',
+    'https://www.findmybanquet.com',
+    'https://find-my-banquet-7hd8.onrender.com',  # Render live URL
+]
 
 # ===== INSTALLED APPS =====
 INSTALLED_APPS = [
