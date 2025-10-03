@@ -12,11 +12,15 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = os.getenv('SECRET_KEY', 'django-insecure-fallback-secret-key')
 DEBUG = os.getenv('DEBUG', 'False').lower() in ('1', 'true', 'yes')
 
-# ===== ALLOWED HOSTS =====
-ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS', '127.0.0.1,localhost').split(',')
+# ===== ENVIRONMENT =====
+# Options: local / render / godaddy
+ENVIRONMENT = os.getenv('ENVIRONMENT', 'local').lower()
 
-# ===== CSRF TRUSTED ORIGINS (must include http/https) =====
-CSRF_TRUSTED_ORIGINS = os.getenv('CSRF_TRUSTED_ORIGINS', '').split(',')
+# ===== ALLOWED HOSTS =====
+ALLOWED_HOSTS = [host.strip() for host in os.getenv('ALLOWED_HOSTS', '127.0.0.1,localhost').split(',')]
+
+# ===== CSRF TRUSTED ORIGINS =====
+CSRF_TRUSTED_ORIGINS = [origin.strip() for origin in os.getenv('CSRF_TRUSTED_ORIGINS', '').split(',')]
 
 # ===== INSTALLED APPS =====
 INSTALLED_APPS = [
@@ -26,7 +30,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'website',
+    'website',  # your app
 ]
 
 # ===== MIDDLEWARE =====
@@ -63,7 +67,7 @@ TEMPLATES = [
 WSGI_APPLICATION = 'Banquet.wsgi.application'
 
 # ===== DATABASE =====
-if os.getenv('RENDER_ENV') == 'True':  # Render deployment
+if ENVIRONMENT in ('render', 'godaddy'):
     DATABASES = {
         'default': {
             'ENGINE': 'django.db.backends.postgresql',
@@ -74,7 +78,7 @@ if os.getenv('RENDER_ENV') == 'True':  # Render deployment
             'PORT': os.getenv('POSTGRES_PORT', 5432),
         }
     }
-else:  # Local dev
+else:  # local development
     DATABASES = {
         'default': {
             'ENGINE': 'django.db.backends.postgresql',
@@ -102,8 +106,8 @@ USE_TZ = True
 
 # ===== STATIC FILES =====
 STATIC_URL = '/static/'
-STATICFILES_DIRS = [BASE_DIR / 'static']
-STATIC_ROOT = BASE_DIR / 'staticfiles'
+STATICFILES_DIRS = [BASE_DIR / 'static']  # Local dev
+STATIC_ROOT = BASE_DIR / 'staticfiles'   # Production collectstatic
 
 # ===== MEDIA FILES =====
 MEDIA_URL = '/media/'
@@ -112,9 +116,8 @@ MEDIA_ROOT = BASE_DIR / 'media'
 # ===== DEFAULT PRIMARY KEY FIELD TYPE =====
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-# ===== SECURITY FOR PROXY / RENDER =====
+# ===== SECURITY FOR PROXY / HTTPS =====
 SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 
-# Force HTTPS in production
-if not DEBUG:
-    SECURE_SSL_REDIRECT = True
+# Force HTTPS in production (Render / GoDaddy)
+SECURE_SSL_REDIRECT = not DEBUG
