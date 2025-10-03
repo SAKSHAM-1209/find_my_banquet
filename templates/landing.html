@@ -72,75 +72,52 @@
   </header>
 
   <!-- ===== HERO SECTION ===== -->
-  <section class="hero-slider">
-    <div class="slider">
-      <div class="slide active"><img src="{% static 'images/1 pic.jpg' %}" alt="Banquet 1"></div>
-      <div class="slide"><img src="{% static 'images/2 pic.jpg' %}" alt="Banquet 2"></div>
-      <div class="slide"><img src="{% static 'images/3 pic.jpg' %}" alt="Banquet 3"></div>
+  <!-- ===== HERO SECTION ===== -->
+<section class="hero-slider">
+  <!-- Slider Images -->
+  <div class="slider">
+    <div class="slide active"><img src="{% static 'images/1 pic.jpg' %}" alt="Banquet 1"></div>
+    <div class="slide"><img src="{% static 'images/2 pic.jpg' %}" alt="Banquet 2"></div>
+    <div class="slide"><img src="{% static 'images/3 pic.jpg' %}" alt="Banquet 3"></div>
+  </div>
+
+  <!-- Overlay -->
+  <div class="hero-overlay"></div>
+
+  <!-- Hero Content -->
+  <div class="container hero-content">
+
+    <h1>Search | Select <span> | Celebrate </span></h1>
+    <p>Discover stunning venues for weddings, corporate events, and celebrations. Book the perfect space for your special moments.</p>
+
+    <!-- Search Form -->
+    <div class="search-form-wrapper">
+      <form class="search-form" method="GET" action="{% url 'landing' %}">
+        <select name="area" class="input-city" required>
+          <option value="" disabled selected>Select Locality</option>
+          {% for area in KANPUR_AREAS %}
+            <option value="{{ area }}" {% if request.GET.area == area %}selected{% endif %}>{{ area }}</option>
+          {% endfor %}
+        </select>
+
+        <input type="date" name="date" class="input-date" value="{{ request.GET.date }}" required>
+        <input type="number" name="guests" class="input-guests" placeholder="Number of guests" value="{{ request.GET.guests }}" required>
+
+        <select name="function_type" required>
+          <option value="" disabled selected>Type of Function</option>
+          <option value="marriage" {% if request.GET.function_type == 'marriage' %}selected{% endif %}>Marriage</option>
+          <option value="engagement" {% if request.GET.function_type == 'engagement' %}selected{% endif %}>Engagement</option>
+          <option value="birthday" {% if request.GET.function_type == 'birthday' %}selected{% endif %}>Birthday Party</option>
+          <option value="corporate" {% if request.GET.function_type == 'corporate' %}selected{% endif %}>Corporate Event</option>
+          <option value="other" {% if request.GET.function_type == 'other' %}selected{% endif %}>Other</option>
+        </select>
+
+        <input type="number" name="budget" class="input-budget" placeholder="Budget (₹)" value="{{ request.GET.budget }}" required>
+        <button type="submit" class="search-btn">Submit</button>
+      </form>
     </div>
-
-    <div class="hero-overlay"></div>
-
-    <div class="container hero-content">
-      <h1>Search | Select <span> | Celebrate </span></h1>
-      <p>Discover stunning venues for weddings, corporate events, and celebrations. Book the perfect space for your special moments.</p>
-
-      <!-- ===== SEARCH FORM ===== -->
-       <!-- ===== SEARCH FORM ===== -->
-<div class="search-form-wrapper">
-  <form class="search-form" method="GET" action="{% url 'landing' %}">
-    
-    <!-- Location Dropdown -->
-    <select name="area" class="input-city" required>
-      <option value="" disabled selected>Select Locality</option>
-      {% for area in KANPUR_AREAS %}
-        <option value="{{ area }}" {% if request.GET.area == area %}selected{% endif %}>{{ area }}</option>
-      {% endfor %}
-    </select>
-    
-    <!-- Date -->
-    <input type="date" name="date" class="input-date" placeholder="Select a date"
-           value="{{ request.GET.date }}">
-    
-    <!-- Number of Guests -->
-    <input type="number" name="guests" placeholder="Number of guests" class="input-guests"
-           value="{{ request.GET.guests }}">
-    
-    <!-- Type of Function -->
-    <select name="function_type">
-      <option value disabled selected>Type of Function</option>
-      <option value="marriage" {% if request.GET.function_type == 'marriage' %}selected{% endif %}>Marriage</option>
-      <option value="engagement" {% if request.GET.function_type == 'engagement' %}selected{% endif %}>Engagement</option>
-      <option value="birthday" {% if request.GET.function_type == 'birthday' %}selected{% endif %}>Birthday Party</option>
-      <option value="corporate" {% if request.GET.function_type == 'corporate' %}selected{% endif %}>Corporate Event</option>
-      <option value="other" {% if request.GET.function_type == 'other' %}selected{% endif %}>Other</option>
-    </select>
-
-    <!-- Budget -->
-    <input type="number" name="budget" placeholder="Budget (₹)" class="input-budget"
-           value="{{ request.GET.budget }}">
-
-    <button type="submit" class="search-btn">Submit</button>
-  </form>
-</div>
-
-      <!-- ===== SEARCH RESULTS ===== -->
-      {% if banquets %}
-        <div class="search-results">
-          <h3>Search Results:</h3>
-          <ul>
-            {% for banquet in banquets %}
-              <li>
-                <strong>{{ banquet.banquet_name }}</strong> - {{ banquet.location }} - Capacity: {{ banquet.capacity }} - Services: {{ banquet.get_services_display }}
-              </li>
-            {% endfor %}
-          </ul>
-        </div>
-      {% elif request.GET %}
-        <p class="text-center">No results found for your search.</p>
-      {% endif %}
-    </div>
-  </section>
+  </div>
+</section>
 
   <!-- ===== FEATURES ===== -->
   <section class="features">

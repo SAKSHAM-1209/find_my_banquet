@@ -3,18 +3,20 @@ import os
 from dotenv import load_dotenv
 
 # ===== LOAD .env =====
-load_dotenv()  # Automatically loads .env from project root
+load_dotenv()
 
 # ===== BASE DIR =====
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 # ===== SECURITY =====
 SECRET_KEY = os.getenv('SECRET_KEY', 'django-insecure-fallback-secret-key')
-DEBUG = os.getenv('DEBUG', 'False') == 'True'
+DEBUG = os.getenv('DEBUG', 'False').lower() in ('1', 'true', 'yes')
 
 # ===== ALLOWED HOSTS =====
-# Read comma-separated string from .env and split into list
 ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS', '127.0.0.1,localhost').split(',')
+
+# ===== CSRF TRUSTED ORIGINS (must include http/https) =====
+CSRF_TRUSTED_ORIGINS = os.getenv('CSRF_TRUSTED_ORIGINS', '').split(',')
 
 # ===== INSTALLED APPS =====
 INSTALLED_APPS = [
@@ -24,7 +26,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'website',  # your app
+    'website',
 ]
 
 # ===== MIDDLEWARE =====
@@ -86,10 +88,10 @@ else:  # Local dev
 
 # ===== PASSWORD VALIDATION =====
 AUTH_PASSWORD_VALIDATORS = [
-    {'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',},
-    {'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator',},
-    {'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator',},
-    {'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',},
+    {'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator'},
+    {'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator'},
+    {'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator'},
+    {'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator'},
 ]
 
 # ===== INTERNATIONALIZATION =====
@@ -100,8 +102,8 @@ USE_TZ = True
 
 # ===== STATIC FILES =====
 STATIC_URL = '/static/'
-STATICFILES_DIRS = [BASE_DIR / 'static']  # Local static
-STATIC_ROOT = BASE_DIR / 'staticfiles'   # Production collectstatic
+STATICFILES_DIRS = [BASE_DIR / 'static']
+STATIC_ROOT = BASE_DIR / 'staticfiles'
 
 # ===== MEDIA FILES =====
 MEDIA_URL = '/media/'
@@ -109,3 +111,10 @@ MEDIA_ROOT = BASE_DIR / 'media'
 
 # ===== DEFAULT PRIMARY KEY FIELD TYPE =====
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+# ===== SECURITY FOR PROXY / RENDER =====
+SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+
+# Force HTTPS in production
+if not DEBUG:
+    SECURE_SSL_REDIRECT = True
