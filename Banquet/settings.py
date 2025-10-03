@@ -15,7 +15,14 @@ SECRET_KEY = os.getenv('SECRET_KEY', 'django-insecure-fallback-secret-key-please
 DEBUG = os.getenv('DEBUG', 'False') == 'True'
 
 # Allowed Hosts
-ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS', '127.0.0.1,localhost').split(',')
+ALLOWED_HOSTS = [
+    "findmybanquet.com",
+    "www.findmybanquet.com",
+    "banquet-render.onrender.com",  # exact Render URL
+    "127.0.0.1",
+    "localhost",
+]
+
 
 # ===== INSTALLED APPS =====
 INSTALLED_APPS = [
@@ -81,7 +88,7 @@ else:  # Local dev
             'ENGINE': 'django.db.backends.postgresql',
             'NAME': os.getenv('POSTGRES_DB', 'banquet_db'),
             'USER': os.getenv('POSTGRES_USER', 'postgres'),
-            'PASSWORD': os.getenv('POSTGRES_PASSWORD', ''),
+            'PASSWORD': os.getenv('POSTGRES_PASSWORD', '1209'),
             'HOST': os.getenv('POSTGRES_HOST', 'localhost'),
             'PORT': os.getenv('POSTGRES_PORT', 5432),
         }
@@ -102,7 +109,7 @@ AUTH_PASSWORD_VALIDATORS = [
         'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
     },
 ]
-
+RENDER_ENV=True
 # ===== INTERNATIONALIZATION =====
 LANGUAGE_CODE = 'en-us'
 TIME_ZONE = 'Asia/Kolkata'
