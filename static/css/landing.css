@@ -256,6 +256,13 @@ body {
   font-size: 1rem;
 }
 
+/* ✅ Placeholder color black */
+.search-form input::placeholder,
+.search-form select::placeholder {
+  color: #000;
+  opacity: 1; /* ensures full color visibility */
+}
+
 .search-btn {
   padding: 12px 24px;
   border-radius: 10px;

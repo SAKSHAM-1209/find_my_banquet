@@ -10,26 +10,25 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 # ===== SECURITY =====
 SECRET_KEY = os.getenv('SECRET_KEY', 'django-insecure-fallback-secret-key')
-DEBUG = os.getenv('DEBUG', 'False').lower() in ('1', 'true', 'yes')
+DEBUG = True
 
 # ===== ENVIRONMENT =====
-# Options: local / render / godaddy
 ENVIRONMENT = os.getenv('ENVIRONMENT', 'local').lower()
 
-# ===== ALLOWED HOSTS =====
+# ===== HOSTS =====
 ALLOWED_HOSTS = [
-    '127.0.0.1',
-    'localhost',
+    'find-my-banquet-1-4wyq.onrender.com',
+    'www.find-my-banquet-1-4wyq.onrender.com',
     'findmybanquet.com',
     'www.findmybanquet.com',
-    'find-my-banquet-7hd8.onrender.com',  # Render live URL
+    '127.0.0.1',
+    'localhost',
 ]
 
-# ===== CSRF TRUSTED ORIGINS =====
 CSRF_TRUSTED_ORIGINS = [
     'https://findmybanquet.com',
     'https://www.findmybanquet.com',
-    'https://find-my-banquet-7hd8.onrender.com',  # Render live URL
+    'https://find-my-banquet-1-4wyq.onrender.com',
 ]
 
 # ===== INSTALLED APPS =====
@@ -40,13 +39,13 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'website',  # your app
+    'website',
 ]
 
 # ===== MIDDLEWARE =====
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
-    'whitenoise.middleware.WhiteNoiseMiddleware',  # Add Whitenoise here
+    'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -55,7 +54,6 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
-# ===== URLS =====
 ROOT_URLCONF = 'Banquet.urls'
 
 # ===== TEMPLATES =====
@@ -77,29 +75,13 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'Banquet.wsgi.application'
 
-# ===== DATABASE =====
-if ENVIRONMENT in ('render', 'godaddy'):
-    DATABASES = {
-        'default': {
-            'ENGINE': 'django.db.backends.postgresql',
-            'NAME': os.getenv('POSTGRES_DB'),
-            'USER': os.getenv('POSTGRES_USER'),
-            'PASSWORD': os.getenv('POSTGRES_PASSWORD'),
-            'HOST': os.getenv('POSTGRES_HOST'),
-            'PORT': os.getenv('POSTGRES_PORT', 5432),
-        }
+# ✅ ===== DATABASE (SQLite for all environments) =====
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': BASE_DIR / 'db.sqlite3',
     }
-else:  # local development
-    DATABASES = {
-        'default': {
-            'ENGINE': 'django.db.backends.postgresql',
-            'NAME': os.getenv('POSTGRES_DB', 'banquet_db'),
-            'USER': os.getenv('POSTGRES_USER', 'postgres'),
-            'PASSWORD': os.getenv('POSTGRES_PASSWORD', '1209'),
-            'HOST': os.getenv('POSTGRES_HOST', 'localhost'),
-            'PORT': os.getenv('POSTGRES_PORT', 5432),
-        }
-    }
+}
 
 # ===== PASSWORD VALIDATION =====
 AUTH_PASSWORD_VALIDATORS = [
@@ -117,9 +99,8 @@ USE_TZ = True
 
 # ===== STATIC FILES =====
 STATIC_URL = '/static/'
-STATICFILES_DIRS = [BASE_DIR / 'static']  # Local dev
-STATIC_ROOT = BASE_DIR / 'staticfiles'   # Production collectstatic
-# Use WhiteNoise for caching static files in production
+STATICFILES_DIRS = [BASE_DIR / 'static']
+STATIC_ROOT = BASE_DIR / 'staticfiles'
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 # ===== MEDIA FILES =====
@@ -128,7 +109,5 @@ MEDIA_ROOT = BASE_DIR / 'media'
 
 # ===== DEFAULT PRIMARY KEY FIELD TYPE =====
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
-
-# ===== SECURITY FOR PROXY / HTTPS =====
-SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
-SECURE_SSL_REDIRECT = not DEBUG  # Force HTTPS in production
+# ===== SECURITY SETTINGS =====
+SECURE_SSL_REDIRECT = False
