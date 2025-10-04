@@ -2,10 +2,4 @@ Django==5.2.6
 whitenoise==6.11.0
 gunicorn==20.1.0
 python-dotenv==1.0.0
-Pillow==9.5.0
-
-# Notes:
-# - Render (or other hosts) should run the build steps:
-#   pip install -r requirements.txt && python manage.py collectstatic --noinput
-# - With DEBUG=False, Django doesn't serve static files directly; collectstatic must populate STATIC_ROOT
-#   (settings.py already sets STATIC_ROOT = BASE_DIR / 'staticfiles').
+Pillow==11.3.0
