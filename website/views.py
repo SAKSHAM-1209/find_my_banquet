@@ -94,71 +94,33 @@ def logout_view(request):
     return redirect('landing')
 
 
-from django.shortcuts import render, redirect
-from django.contrib import messages
-from django.db import transaction
-from .models import Banquet, BanquetImage
-from .forms import BanquetForm
-
-# ===== Custom login_required decorator with message =====
-def login_required_message(view_func):
-    """Non-login user ko landing par redirect karte hue message dikhaye"""
-    def wrapper(request, *args, **kwargs):
-        if not request.user.is_authenticated:
-            messages.warning(request, "⚠️ You must be logged in to register a banquet.")
-            return redirect('landing')
-        return view_func(request, *args, **kwargs)
-    return wrapper
-
-
-from django.shortcuts import render, redirect
-from django.contrib import messages
-from django.db import transaction
-from .models import Banquet, BanquetImage
-from .forms import BanquetForm
-
-# ===== Custom login_required decorator with message =====
-def login_required_message(view_func):
-    """Non-login user ko landing par redirect karte hue message dikhaye"""
-    def wrapper(request, *args, **kwargs):
-        if not request.user.is_authenticated:
-            messages.warning(request, "⚠️ आपको banquet register करने के लिए login करना होगा।")
-            return redirect('landing')
-        return view_func(request, *args, **kwargs)
-    return wrapper
-
-
 # ===== BANQUET REGISTRATION =====
-@login_required_message
+
+
+@login_required(login_url='login')  # agar user login nahi hai to login page pe redirect
 def register_banquet(request):
     if request.method == 'POST':
-        form = BanquetForm(request.POST, request.FILES)
-        files = request.FILES.getlist('images')  # multiple images
+        form = BanquetForm(request.POST)
+        files = request.FILES.getlist('image')  # multiple images handle
 
         if form.is_valid():
-            try:
-                with transaction.atomic():  # ensure atomic save
-                    banquet = form.save(commit=False)
-                    banquet.owner_name = request.user.get_full_name() or request.user.username
-                    banquet.save()
+            banquet = form.save(commit=False)
+            banquet.owner_name = request.user.get_full_name() or request.user.username
+            banquet.save()
 
-                    # Save multiple images
-                    for f in files:
-                        BanquetImage.objects.create(banquet=banquet, image=f)
+            for f in files:
+                BanquetImage.objects.create(banquet=banquet, image=f)
 
-                messages.success(request, '✅ Banquet registered successfully with images!')
-                return redirect('landing')
-
-            except Exception as e:
-                messages.error(request, f'Error saving banquet: {str(e)}')
-
+            messages.success(request, '✅ Banquet registered successfully with images!')
+            return redirect('landing')
         else:
             messages.error(request, 'Please correct the errors below.')
-
     else:
         form = BanquetForm()
 
     return render(request, 'register.html', {'form': form})
+
+
 
 
 

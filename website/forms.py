@@ -58,19 +58,11 @@ class LoginForm(AuthenticationForm):
     password = forms.CharField(
         widget=forms.PasswordInput(attrs={'class': 'form-input', 'placeholder': 'Password'})
     )
-
-
 # ===== BANQUET FORM =====
 class BanquetForm(forms.ModelForm):
-    images = forms.FileField(
-        widget=forms.ClearableFileInput(attrs={'multiple': True, 'class': 'form-input'}),
-        required=False,
-        label='Upload Images'
-    )
-
     class Meta:
         model = Banquet
-        fields = ['banquet_name', 'email', 'phone', 'capacity', 'location', 'google_link', 'images']
+        fields = ['banquet_name', 'email', 'phone', 'capacity', 'location', 'google_link']
         widgets = {
             'banquet_name': forms.TextInput(attrs={'class': 'form-input', 'placeholder': 'Banquet Name'}),
             'email': forms.EmailInput(attrs={'class': 'form-input', 'placeholder': 'Email'}),
@@ -79,6 +71,7 @@ class BanquetForm(forms.ModelForm):
             'location': forms.TextInput(attrs={'class': 'form-input', 'placeholder': 'Location'}),
             'google_link': forms.URLInput(attrs={'class': 'form-input', 'placeholder': 'Google My Business Page Link'}),
         }
+
 
 # ===== SCHEDULE CALL FORM =====
 REASON_CHOICES = [
