@@ -10,7 +10,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 # ===== SECURITY =====
 SECRET_KEY = os.getenv('SECRET_KEY', 'django-insecure-fallback-secret-key')
-DEBUG = False
+DEBUG = False  # Always keep False in production
 
 # ===== ENVIRONMENT =====
 ENVIRONMENT = os.getenv('ENVIRONMENT', 'local').lower()
@@ -19,18 +19,16 @@ ENVIRONMENT = os.getenv('ENVIRONMENT', 'local').lower()
 ALLOWED_HOSTS = [
     '127.0.0.1',
     'localhost',
-    'find-my-banquet-6wqy.onrender.com',  # Add new Render URL
+    'find-my-banquet-6wqy.onrender.com',  # Render URL
     'findmybanquet.com',
     'www.findmybanquet.com',
 ]
 
-
 CSRF_TRUSTED_ORIGINS = [
-    'https://find-my-banquet-6wqy.onrender.com',  # new Render URL
+    'https://find-my-banquet-6wqy.onrender.com',
     'https://findmybanquet.com',
     'https://www.findmybanquet.com',
 ]
-
 
 # ===== INSTALLED APPS =====
 INSTALLED_APPS = [
@@ -76,7 +74,7 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'Banquet.wsgi.application'
 
-# ✅ ===== DATABASE (SQLite for all environments) =====
+# ===== DATABASE (SQLite for all environments) =====
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
@@ -110,5 +108,6 @@ MEDIA_ROOT = BASE_DIR / 'media'
 
 # ===== DEFAULT PRIMARY KEY FIELD TYPE =====
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
 # ===== SECURITY SETTINGS =====
-SECURE_SSL_REDIRECT = False
+SECURE_SSL_REDIRECT = False  # Set True if using HTTPS in production
