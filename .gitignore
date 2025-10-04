@@ -6,15 +6,16 @@ __pycache__/
 *.pyc
 
 # ===== Django =====
-*.sqlite3
 *.log
-db.sqlite3
 /staticfiles/
 media/
 *.pot
 *.mo
-*.pyc
-*.pyo
+
+# ===== SQLite DB (temporarily force add if needed) =====
+# db.sqlite3 normally ignored, but can be force-added
+*.sqlite3
+db.sqlite3
 
 # ===== Environment / Virtual Envs =====
 .env
@@ -54,5 +55,9 @@ yarn-error.log
 # ===== Misc =====
 *.bak
 *.swp
-git init
+
+# ===== Git commands (not files) =====
+# git init
+# git add -f staticfiles/  <-- don't include this line in .gitignore
+git add -f db.sqlite3
 git add -f staticfiles/
