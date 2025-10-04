@@ -10,26 +10,27 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 # ===== SECURITY =====
 SECRET_KEY = os.getenv('SECRET_KEY', 'django-insecure-fallback-secret-key')
-DEBUG = True
+DEBUG = False
 
 # ===== ENVIRONMENT =====
 ENVIRONMENT = os.getenv('ENVIRONMENT', 'local').lower()
 
 # ===== HOSTS =====
 ALLOWED_HOSTS = [
-    'find-my-banquet-1-4wyq.onrender.com',
-    'www.find-my-banquet-1-4wyq.onrender.com',
-    'findmybanquet.com',
-    'www.findmybanquet.com',
     '127.0.0.1',
     'localhost',
+    'find-my-banquet-6wqy.onrender.com',  # Add new Render URL
+    'findmybanquet.com',
+    'www.findmybanquet.com',
 ]
 
+
 CSRF_TRUSTED_ORIGINS = [
+    'https://find-my-banquet-6wqy.onrender.com',  # new Render URL
     'https://findmybanquet.com',
     'https://www.findmybanquet.com',
-    'https://find-my-banquet-1-4wyq.onrender.com',
 ]
+
 
 # ===== INSTALLED APPS =====
 INSTALLED_APPS = [
