@@ -290,3 +290,16 @@ form input:focus {
     margin-bottom: 4px;
   }
 }
+/* Password wrapper ke andar eye icon */
+.password-wrapper { position: relative; }
+.toggle-password {
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 1.1rem;
+  color: #555;
+} ye lgana zaroori hi  

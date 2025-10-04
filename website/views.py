@@ -10,14 +10,12 @@ from .constants import KANPUR_AREAS  # ✅ Predefined areas
 # ===== LANDING PAGE =====
 def landing(request):
     banquets = Banquet.objects.all()
-    area = request.GET.get('area')  # user selected area
+    area = request.GET.get('area')  
     guests = request.GET.get('guests')
 
-    # Filter by area
     if area:
         banquets = banquets.filter(location__iexact=area)
 
-    # Filter by number of guests
     if guests:
         try:
             guests_int = int(guests)
@@ -27,7 +25,7 @@ def landing(request):
 
     context = {
         'banquets': banquets,
-        'KANPUR_AREAS': KANPUR_AREAS  # ✅ Pass areas to template for dropdown
+        'KANPUR_AREAS': KANPUR_AREAS
     }
     return render(request, 'landing.html', context)
 
@@ -51,11 +49,25 @@ def signup_view(request):
             user = form.save()
             login(request, user)
             messages.success(request, 'Account created successfully!')
+
+            # ✅ Check if user wants to list a venue
+            venue_name = request.POST.get('venue_name')
+            if venue_name:
+                Banquet.objects.create(
+                    owner_name=user.get_full_name() or user.username,
+                    name=venue_name,
+                    address=request.POST.get('venue_address'),
+                    capacity=request.POST.get('venue_capacity') or 0,
+                    price=request.POST.get('venue_price') or 0
+                )
+                messages.success(request, '✅ Your banquet has been registered successfully!')
+
             return redirect('landing')
         else:
             messages.error(request, 'Please correct the errors below.')
     else:
         form = SignUpForm()
+    
     return render(request, 'signup.html', {'form': form})
 
 
@@ -87,7 +99,7 @@ def logout_view(request):
 def register_banquet(request):
     if request.method == 'POST':
         form = BanquetForm(request.POST)
-        files = request.FILES.getlist('image')  # Multiple images
+        files = request.FILES.getlist('image')
 
         if form.is_valid():
             banquet = form.save(commit=False)
