@@ -59,12 +59,18 @@ class LoginForm(AuthenticationForm):
         widget=forms.PasswordInput(attrs={'class': 'form-input', 'placeholder': 'Password'})
     )
 
+
 # ===== BANQUET FORM =====
 class BanquetForm(forms.ModelForm):
+    images = forms.FileField(
+        widget=forms.ClearableFileInput(attrs={'multiple': True, 'class': 'form-input'}),
+        required=False,
+        label='Upload Images'
+    )
 
     class Meta:
         model = Banquet
-        fields = ['banquet_name', 'email', 'phone', 'capacity', 'location', 'google_link']
+        fields = ['banquet_name', 'email', 'phone', 'capacity', 'location', 'google_link', 'images']
         widgets = {
             'banquet_name': forms.TextInput(attrs={'class': 'form-input', 'placeholder': 'Banquet Name'}),
             'email': forms.EmailInput(attrs={'class': 'form-input', 'placeholder': 'Email'}),
