@@ -92,31 +92,37 @@
 
     <!-- Search Form -->
     <div class="search-form-wrapper">
-      <form class="search-form" method="GET" action="{% url 'landing' %}">
-        <select name="area" class="input-city" required>
-          <option value="" disabled selected>Select Locality</option>
-          {% for area in KANPUR_AREAS %}
-            <option value="{{ area }}" {% if request.GET.area == area %}selected{% endif %}>{{ area }}</option>
-          {% endfor %}
-        </select>
-
-        <input type="date" name="date" class="input-date" value="{{ request.GET.date }}" required>
-        <input type="number" name="guests" class="input-guests" placeholder="Number of guests" value="{{ request.GET.guests }}" required>
-
-        <select name="function_type" required>
-          <option value="" disabled selected>Type of Function</option>
-          <option value="marriage" {% if request.GET.function_type == 'marriage' %}selected{% endif %}>Marriage</option>
-          <option value="engagement" {% if request.GET.function_type == 'engagement' %}selected{% endif %}>Engagement</option>
-          <option value="birthday" {% if request.GET.function_type == 'birthday' %}selected{% endif %}>Birthday Party</option>
-          <option value="corporate" {% if request.GET.function_type == 'corporate' %}selected{% endif %}>Corporate Event</option>
-          <option value="other" {% if request.GET.function_type == 'other' %}selected{% endif %}>Other</option>
-        </select>
-
-        <input type="number" name="budget" class="input-budget" placeholder="Budget (₹)" value="{{ request.GET.budget }}" required>
-        <button type="submit" class="search-btn">Submit</button>
-      </form>
+  <form class="search-form" method="GET" action="{% url 'landing' %}">
+    
+    <div class="line line1">
+      <input type="text" name="area" placeholder="Locality" value="{{ request.GET.area }}" required>
+      <input type="date" name="date" value="{{ request.GET.date }}" required>
+      <input type="number" name="guests" placeholder="Number of Guests" value="{{ request.GET.guests }}" required>
     </div>
-  </div>
+
+    <div class="line line2">
+      <select name="function_type" required>
+        <option value="" disabled selected>Type of Function</option>
+        <option value="marriage" {% if request.GET.function_type == 'marriage' %}selected{% endif %}>Marriage</option>
+        <option value="engagement" {% if request.GET.function_type == 'engagement' %}selected{% endif %}>Engagement</option>
+        <option value="birthday" {% if request.GET.function_type == 'birthday' %}selected{% endif %}>Birthday</option>
+        <option value="corporate" {% if request.GET.function_type == 'corporate' %}selected{% endif %}>Corporate</option>
+        <option value="other" {% if request.GET.function_type == 'other' %}selected{% endif %}>Other</option>
+      </select>
+     <input 
+  type="text" 
+  name="budget" 
+  placeholder="Budget (₹)" 
+  inputmode="numeric" 
+  required
+>
+
+      <button type="submit" class="search-btn">Submit</button>
+    </div>
+
+  </form>
+</div>
+
 </section>
 
   <!-- ===== FEATURES ===== -->
@@ -221,6 +227,7 @@
       slide.addEventListener('mouseenter', stopSlider);
       slide.addEventListener('mouseleave', startSlider);
     });
+    
   </script>
 </body>
 </html>

@@ -38,34 +38,37 @@ def banquet(request):
     banquets = Banquet.objects.all()
     return render(request, 'banquet.html', {'banquets': banquets})
 
-# ===== SIGNUP =====
 def signup_view(request):
     if request.method == 'POST':
         form = SignUpForm(request.POST)
         if form.is_valid():
             user = form.save()  # password hashed automatically
 
-            # Save extra user fields
+            # Save extra basic user info
             user.first_name = form.cleaned_data.get('first_name')
             user.last_name = form.cleaned_data.get('last_name')
             user.email = form.cleaned_data.get('email')
             user.save()
 
-            # Save Venue if owner fields are filled
-            venue_name = form.cleaned_data.get('venue_name')
-            venue_address = form.cleaned_data.get('venue_address')
-            venue_capacity = form.cleaned_data.get('venue_capacity')
-            venue_price = form.cleaned_data.get('venue_price')
+            # ✅ Handle optional owner fields safely
+            venue_name = request.POST.get('venue_name')
+            venue_address = request.POST.get('venue_address')
+            venue_capacity = request.POST.get('venue_capacity')
+            venue_price = request.POST.get('venue_price')
 
             if venue_name and venue_address and venue_capacity and venue_price:
-                Venue.objects.create(
-                    user=user,
-                    name=venue_name,
-                    address=venue_address,
-                    capacity=venue_capacity,
-                    price=venue_price
-                )
+                try:
+                    Venue.objects.create(
+                        user=user,
+                        name=venue_name,
+                        address=venue_address,
+                        capacity=int(venue_capacity),
+                        price=float(venue_price)
+                    )
+                except Exception as e:
+                    print('Venue creation error:', e)
 
+            # Auto login after signup
             login(request, user)
             messages.success(request, '✅ Account created successfully!')
             return redirect('landing')
@@ -76,6 +79,7 @@ def signup_view(request):
         form = SignUpForm()
 
     return render(request, 'signup.html', {'form': form})
+
 
 # ===== LOGIN =====
 def login_view(request):

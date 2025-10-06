@@ -15,7 +15,6 @@ def landing(request):
 
     if area:
         banquets = banquets.filter(location__iexact=area)
-
     if guests:
         try:
             guests_int = int(guests)
@@ -25,9 +24,11 @@ def landing(request):
 
     context = {
         'banquets': banquets,
-        'KANPUR_AREAS': KANPUR_AREAS
+        'KANPUR_AREAS': KANPUR_AREAS,
+        'request': request  # ✅ Add request for template GET values
     }
     return render(request, 'landing.html', context)
+
 
 
 # ===== ABOUT PAGE =====
@@ -48,27 +49,42 @@ def signup_view(request):
         if form.is_valid():
             user = form.save()
             login(request, user)
-            messages.success(request, 'Account created successfully!')
+            messages.success(request, '✅ Account created successfully!')
 
-            # ✅ Check if user wants to list a venue
+            # ✅ Owner fields check karte hain (List My Venue)
             venue_name = request.POST.get('venue_name')
-            if venue_name:
-                Banquet.objects.create(
-                    owner_name=user.get_full_name() or user.username,
-                    name=venue_name,
-                    address=request.POST.get('venue_address'),
-                    capacity=request.POST.get('venue_capacity') or 0,
-                    price=request.POST.get('venue_price') or 0
-                )
-                messages.success(request, '✅ Your banquet has been registered successfully!')
+            venue_address = request.POST.get('venue_address')
+            venue_capacity = request.POST.get('venue_capacity')
+            venue_price = request.POST.get('venue_price')
+
+            # Agar user ne venue details diye hain, tabhi banquet create hoga
+            if venue_name and venue_address and venue_capacity and venue_price:
+                try:
+                    Banquet.objects.create(
+                        owner_name=user.get_full_name() or user.username,
+                        banquet_name=venue_name,
+                        email=user.email,
+                        phone="",
+                        capacity=int(venue_capacity),
+                        location=venue_address,
+                        google_link="",
+                        services=""
+                    )
+                    messages.success(request, '✅ Your banquet has been registered successfully!')
+                except Exception as e:
+                    print("Banquet creation error:", e)
+                    messages.error(request, "⚠ Error saving your banquet. Please try again.")
 
             return redirect('landing')
         else:
+            print("Signup form errors:", form.errors)
             messages.error(request, 'Please correct the errors below.')
     else:
         form = SignUpForm()
-    
+
     return render(request, 'signup.html', {'form': form})
+
+
 
 
 # ===== LOGIN =====
