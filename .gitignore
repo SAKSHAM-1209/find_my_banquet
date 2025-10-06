@@ -12,8 +12,7 @@ media/
 *.pot
 *.mo
 
-# ===== SQLite DB (temporarily force add if needed) =====
-# db.sqlite3 normally ignored, but can be force-added
+# ===== SQLite DB =====
 *.sqlite3
 db.sqlite3
 
@@ -55,9 +54,3 @@ yarn-error.log
 # ===== Misc =====
 *.bak
 *.swp
-
-# ===== Git commands (not files) =====
-# git init
-# git add -f staticfiles/  <-- don't include this line in .gitignore
-git add -f db.sqlite3
-git add -f staticfiles/
