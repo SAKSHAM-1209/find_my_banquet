@@ -23,17 +23,18 @@ body {
 }
 
 .contact-header h1 {
-    font-size: 3rem;
+    font-size: 2.5rem;
     margin-bottom: 15px;
     animation: fadeDown 1s ease;
 }
 
 .contact-header p {
-    font-size: 1.2rem;
+    font-size: 1.1rem;
     max-width: 700px;
     margin: 0 auto;
     opacity: 0.9;
     animation: fadeUp 1.2s ease;
+    padding: 0 15px;
 }
 
 /* ========== CONTACT CONTAINER ========== */
@@ -257,6 +258,7 @@ body {
 @media(max-width: 900px) {
     .contact-container {
         flex-direction: column;
+        margin: -40px 15px 40px;
     }
 
     .contact-info,
@@ -264,11 +266,39 @@ body {
         flex: 1 0 100%;
     }
 
+    .contact-header {
+        padding: 50px 20px;
+    }
+
     .contact-header h1 {
-        font-size: 2.2rem;
+        font-size: 2rem;
     }
 
     .contact-header p {
         font-size: 1rem;
+    }
+}
+
+@media(max-width: 480px) {
+    .contact-header {
+        padding: 40px 15px;
+    }
+
+    .contact-header h1 {
+        font-size: 1.75rem;
+    }
+
+    .contact-header p {
+        font-size: 0.95rem;
+    }
+
+    .contact-info,
+    .contact-form {
+        padding: 25px 20px;
+    }
+
+    .contact-form button {
+        font-size: 1rem;
+        padding: 12px;
     }
 }

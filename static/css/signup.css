@@ -9,11 +9,11 @@
 /* ===== HERO BACKGROUND ===== */
 .signup-hero {
   background: linear-gradient(135deg, #f8f9fa, #e9ecef);
-  min-height: calc(100vh - 80px);
+  min-height: 100vh;
   display: flex;
   justify-content: center;
   align-items: center;
-  padding: 20px;
+  padding: 40px 20px;
 }
 
 /* ===== CARD WRAPPER ===== */
@@ -274,20 +274,87 @@ form input:focus {
 }
 
 /* ===== RESPONSIVE ===== */
-@media(max-width:500px) {
+@media(max-width: 768px) {
+  .signup-hero {
+    padding: 30px 15px;
+    min-height: auto;
+  }
+
+  .signup-wrapper {
+    max-width: 100%;
+  }
+
+  .signup-card {
+    padding: 30px 25px;
+  }
+
+  h2 {
+    font-size: 22px;
+  }
+
+  .role-btn {
+    flex: 1 1 100%;
+    justify-content: center;
+    text-align: center;
+    padding: 12px;
+  }
+}
+
+@media(max-width: 480px) {
+  .signup-hero {
+    padding: 20px 10px;
+  }
+
+  .signup-card {
+    padding: 25px 20px;
+  }
+
+  .icon-circle {
+    width: 55px;
+    height: 55px;
+    font-size: 26px;
+  }
+
+  h2 {
+    font-size: 20px;
+  }
+
+  p {
+    font-size: 14px;
+  }
+
   .name-group {
     flex-direction: column;
   }
 
   .role-btn {
-    flex-direction: column;
-    gap: 6px;
+    flex: 1 1 100%;
+    justify-content: center;
     text-align: center;
   }
 
   .role-icon {
     margin-right: 0;
     margin-bottom: 4px;
+  }
+
+  form input {
+    padding: 11px 13px;
+    font-size: 14px;
+  }
+
+  .btn-submit {
+    font-size: 16px;
+    padding: 12px;
+  }
+
+  .social-buttons {
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .social-buttons button {
+    flex: 1 1 100%;
   }
 }
 /* Password wrapper ke andar eye icon */

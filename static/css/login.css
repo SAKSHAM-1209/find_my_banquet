@@ -194,6 +194,11 @@ body {
    🔹 RESPONSIVE
 ===================================== */
 @media (max-width: 768px) {
+  .header {
+    position: static !important;
+    box-shadow: none !important;
+  }
+
   .header-inner {
     flex-direction: column;
     gap: 10px;
@@ -211,16 +216,36 @@ body {
   }
 
   .login-container {
-    margin: 40px 15px;
+    margin: 30px 15px;
     padding: 25px 20px;
+    max-width: 100%;
   }
 }
 
+@media (max-width: 480px) {
+  .login-section {
+    padding: 20px 10px;
+  }
 
-/* ===== Mobile: make header non-sticky ===== */
-@media (max-width: 768px) {
-  .header {
-    position: static !important;
-    box-shadow: none !important;
+  .login-container {
+    margin: 20px 10px;
+    padding: 25px 18px;
+  }
+
+  .login-container h2 {
+    font-size: 1.4rem;
+  }
+
+  .login-container p {
+    font-size: 0.85rem;
+  }
+
+  .social-btns {
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .social-btns button {
+    width: 100%;
   }
 }

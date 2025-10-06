@@ -74,6 +74,7 @@ html, body {
 .auth-btns {
     display: flex;
     gap: 14px;
+    flex-wrap: wrap;
 }
 
 .auth-btns a {
@@ -290,18 +291,57 @@ html, body {
 
 /* ========== MEDIA QUERY ========== */
 @media(max-width:768px){
-    .header-inner{ flex-direction:column; gap:10px;}
-    .nav{ flex-wrap:wrap; justify-content:center;}
-    .nav a{ margin:6px 12px;}
-    .auth-btns{ justify-content:center; gap:12px;}
-    .banquet-title{ font-size:1.8rem;}
+    .header {
+        position: static !important;
+        box-shadow: none !important;
+        padding: 12px 15px;
+    }
+    .header-inner {
+        flex-direction: column;
+        gap: 12px;
+    }
+    .logo {
+        font-size: 1.4rem;
+    }
+    .nav {
+        flex-wrap: wrap;
+        justify-content: center;
+    }
+    .nav a {
+        margin: 6px 10px;
+        font-size: 0.9rem;
+    }
+    .auth-btns {
+        justify-content: center;
+        gap: 10px;
+        width: 100%;
+    }
+    .auth-btns a {
+        font-size: 0.85rem;
+        padding: 8px 16px;
+    }
+    .coming-soon-section {
+        padding: 30px 15px;
+    }
+    .banquet-card {
+        max-width: 100%;
+        padding: 35px 25px;
+    }
+    .banquet-title {
+        font-size: 1.6rem;
+    }
 }
 
-
-/* ===== Mobile: make header non-sticky ===== */
-@media (max-width: 768px) {
-  .header {
-    position: static !important;
-    box-shadow: none !important;
-  }
+@media(max-width: 480px) {
+    .banquet-card {
+        padding: 30px 20px;
+        margin: 0 10px;
+    }
+    .banquet-title {
+        font-size: 1.4rem;
+    }
+    .banquet-btn {
+        padding: 14px 30px;
+        font-size: 1rem;
+    }
 }

@@ -324,9 +324,15 @@ select:focus {
 
 /* ===== RESPONSIVE ===== */
 @media (max-width: 768px) {
+    .header {
+        position: static !important;
+        box-shadow: none !important;
+        padding: 12px 15px;
+    }
+
     .header-inner {
         flex-direction: column;
-        gap: 10px;
+        gap: 12px;
     }
 
     .nav {
@@ -336,38 +342,57 @@ select:focus {
 
     .nav a {
         margin: 6px 12px;
+        font-size: 0.9rem;
     }
 
     .auth-btns {
         justify-content: center;
-        gap: 12px;
+        gap: 10px;
+        flex-wrap: wrap;
+    }
+
+    .auth-btns a {
+        font-size: 0.85rem;
+        padding: 8px 16px;
+    }
+
+    .register-section {
+        padding: 40px 15px;
+    }
+
+    .register-container {
+        padding: 30px 20px;
+        max-width: 100%;
     }
 }
 
-@media (max-width: 600px) {
+@media (max-width: 480px) {
+    .register-section {
+        padding: 30px 10px;
+    }
+
     .register-container {
-        padding: 25px 20px;
+        padding: 25px 18px;
+        margin: 0 10px;
     }
 
     .form-title {
-        font-size: 22px;
+        font-size: 20px;
     }
 
     input,
     select {
         padding: 10px 12px;
+        font-size: 14px;
     }
 
     .btn {
         padding: 12px;
         font-size: 15px;
     }
-}
 
-/* ===== Mobile: make header non-sticky ===== */
-@media (max-width: 768px) {
-  .header {
-    position: static !important;
-    box-shadow: none !important;
-  }
+    #image-preview img {
+        width: 80px;
+        height: 65px;
+    }
 }
