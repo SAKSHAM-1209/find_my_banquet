@@ -1,16 +1,17 @@
 {% load static %}
 <!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Login | Find My Banquet</title>
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login | Find My Banquet</title>
 
-  <!-- CSS -->
-  <link rel="stylesheet" href="{% static 'css/login.css' %}">
-  <link rel="stylesheet" href="{% static 'css/landing.css' %}">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-  <style>
+    <!-- CSS -->
+    <link rel="stylesheet" href="{% static 'css/login.css' %}">
+    <link rel="stylesheet" href="{% static 'css/landing.css' %}">
+    <link rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <style>
     /* Password toggle styles */
     .password-wrapper { position: relative; }
     .toggle-password {
@@ -31,16 +32,16 @@
     .message.error { background-color: #f8d7da; color: #842029; }
     .message.success { background-color: #d1e7dd; color: #0f5132; }
   </style>
-</head>
-<body>
+  </head>
+  <body>
 
-  {% if messages %}
+    {% if messages %}
     <div class="messages">
       {% for message in messages %}
-        <div class="message {{ message.tags }}">{{ message }}</div>
+      <div class="message {{ message.tags }}">{{ message }}</div>
       {% endfor %}
     </div>
-  {% endif %}
+    {% endif %}
 
   <!-- ===== HEADER ===== -->
   <header class="header">
@@ -60,52 +61,54 @@
     </div>
   </header>
 
-  <!-- ===== LOGIN FORM SECTION ===== -->
-  <section class="login-section">
-    <div class="login-container">
-      <img src="{% static 'images/login.jpg' %}" alt="User Icon">
-      <h2>Welcome Back</h2>
-      <p>Sign in to your Find My Banquet account</p>
+    <!-- ===== LOGIN FORM SECTION ===== -->
+    <section class="login-section">
+      <div class="login-container">
+        <img src="{% static 'images/login.jpg' %}" alt="User Icon">
+        <h2>Welcome Back</h2>
+        <p>Sign in to your Find My Banquet account</p>
 
-      <form method="POST">
-        {% csrf_token %}
-        {{ form.non_field_errors }}
+        <form method="POST">
+          {% csrf_token %}
+          {{ form.non_field_errors }}
 
-        <div class="form-group">
-          <label for="{{ form.username.id_for_label }}">Username</label>
-          {{ form.username }}
-          {{ form.username.errors }}
+          <div class="form-group">
+            <label for="{{ form.username.id_for_label }}">Username</label>
+            {{ form.username }}
+            {{ form.username.errors }}
+          </div>
+
+          <!-- Password with toggle -->
+          <div class="form-group password-wrapper">
+            <label for="{{ form.password.id_for_label }}">Password</label>
+            {{ form.password }}
+            <button type="button" class="toggle-password"
+              data-target="{{ form.password.id_for_label }}">
+              <i class="fa-regular fa-eye"></i>
+            </button>
+            {{ form.password.errors }}
+          </div>
+
+          <div class="remember-forgot">
+            <a href="#">Forgot password?</a>
+          </div>
+
+          <button type="submit" class="sign-in">Login</button>
+        </form>
+
+        <div class="divider">or continue with</div>
+
+        <div class="social-btns">
+          <button class="google"><i class="fab fa-google"></i> Google</button>
+          <button class="facebook"><i class="fab fa-facebook-f"></i>
+            Facebook</button>
         </div>
-
-        <!-- Password with toggle -->
-        <div class="form-group password-wrapper">
-          <label for="{{ form.password.id_for_label }}">Password</label>
-          {{ form.password }}
-          <button type="button" class="toggle-password" data-target="{{ form.password.id_for_label }}">
-            <i class="fa-regular fa-eye"></i>
-          </button>
-          {{ form.password.errors }}
-        </div>
-
-        <div class="remember-forgot">
-          <a href="#">Forgot password?</a>
-        </div>
-
-        <button type="submit" class="sign-in">Login</button>
-      </form>
-
-      <div class="divider">or continue with</div>
-
-      <div class="social-btns">
-        <button class="google"><i class="fab fa-google"></i> Google</button>
-        <button class="facebook"><i class="fab fa-facebook-f"></i> Facebook</button>
       </div>
-    </div>
-  </section>
+    </section>
 
-  {% include 'footer.html' %}
+    {% include 'footer.html' %}
 
-  <script>
+    <script>
     // Password toggle functionality
     const toggleButtons = document.querySelectorAll('.toggle-password');
     toggleButtons.forEach(btn => {
@@ -124,5 +127,5 @@
       });
     });
   </script>
-</body>
+  </body>
 </html>
