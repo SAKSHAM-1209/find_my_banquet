@@ -143,6 +143,11 @@ if ENVIRONMENT == 'production':
     SECURE_SSL_REDIRECT = True
     SESSION_COOKIE_SECURE = True
     CSRF_COOKIE_SECURE = True
+    # When running behind a proxy (Render, Heroku, etc.) set the header
+    # that tells Django the request was originally HTTPS. Render sets
+    # 'X-Forwarded-Proto' so configure Django to respect it.
+    SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+    USE_X_FORWARDED_HOST = True
 else:
     SECURE_SSL_REDIRECT = False
     SESSION_COOKIE_SECURE = False
