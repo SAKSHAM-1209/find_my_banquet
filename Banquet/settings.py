@@ -1,5 +1,6 @@
 from pathlib import Path
 import os
+import dj_database_url
 from dotenv import load_dotenv
 
 # ===== LOAD .env =====
@@ -10,7 +11,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 # ===== SECURITY =====
 SECRET_KEY = os.getenv('SECRET_KEY', 'django-insecure-fallback-secret-key')
-DEBUG = True  # Always keep False in production
+DEBUG = os.getenv('ENVIRONMENT', 'local').lower() == 'local'
 
 # ===== ENVIRONMENT =====
 ENVIRONMENT = os.getenv('ENVIRONMENT', 'local').lower()
@@ -74,13 +75,32 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'Banquet.wsgi.application'
 
-# ===== DATABASE (SQLite for all environments) =====
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+# ===== DATABASE CONFIGURATION (Supabase PostgreSQL with local SQLite fallback) =====
+# Expect DATABASE_URL in the form provided by Supabase, e.g.
+# postgres://USER:PASSWORD@HOST:PORT/DB
+db_url = os.getenv('DATABASE_URL')
+use_database_url = os.getenv('USE_DATABASE_URL', '0') == '1'
+
+# In local/dev, default to SQLite even if DATABASE_URL exists, unless explicitly forced
+if ENVIRONMENT in ['local', 'dev', 'development'] and not use_database_url:
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.sqlite3',
+            'NAME': BASE_DIR / 'db.sqlite3',
+        }
     }
-}
+else:
+    # Ensure SSL is required outside local envs
+    ssl_require = ENVIRONMENT not in ['local', 'dev', 'development']
+    DATABASES = {
+        'default': dj_database_url.config(
+            default=db_url,
+            conn_max_age=600,
+            ssl_require=ssl_require,
+        )
+    }
+
+
 
 # ===== PASSWORD VALIDATION =====
 AUTH_PASSWORD_VALIDATORS = [
@@ -110,4 +130,4 @@ MEDIA_ROOT = BASE_DIR / 'media'
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 # ===== SECURITY SETTINGS =====
-SECURE_SSL_REDIRECT = False  # Set True if using HTTPS in production
+SECURE_SSL_REDIRECT = False  # True in production with HTTPS
