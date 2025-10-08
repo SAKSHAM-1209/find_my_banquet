@@ -11,33 +11,26 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 # ===== SECURITY =====
 SECRET_KEY = os.getenv('SECRET_KEY', 'django-insecure-fallback-secret-key')
-DEBUG = os.getenv('ENVIRONMENT', 'local').lower() == 'local'
 
-# ===== ENVIRONMENT =====
+# ===== ENVIRONMENT & DEBUG =====
 ENVIRONMENT = os.getenv('ENVIRONMENT', 'local').lower()
+DEBUG = os.getenv('DEBUG', '0') == '1' if ENVIRONMENT != 'local' else True
 
 # ===== HOSTS =====
 DEFAULT_ALLOWED_HOSTS = [
     '127.0.0.1',
     'localhost',
-    'find-my-banquet-6wqy.onrender.com',  # Render URL
+    'find-banquet.onrender.com',  # ✅ Render URL
     'findmybanquet.com',
     'www.findmybanquet.com',
 ]
 
-# Allow overriding ALLOWED_HOSTS via environment variable (comma-separated)
 env_allowed = os.getenv('ALLOWED_HOSTS')
-if env_allowed:
-    ALLOWED_HOSTS = [h.strip() for h in env_allowed.split(',') if h.strip()]
-else:
-    ALLOWED_HOSTS = DEFAULT_ALLOWED_HOSTS
+ALLOWED_HOSTS = [h.strip() for h in env_allowed.split(',')] if env_allowed else DEFAULT_ALLOWED_HOSTS
 
-# CSRF trusted origins (allow setting via env or default to known production hosts)
+# ===== CSRF Trusted Origins =====
 env_csrf = os.getenv('CSRF_TRUSTED_ORIGINS')
-if env_csrf:
-    CSRF_TRUSTED_ORIGINS = [u.strip() for u in env_csrf.split(',') if u.strip()]
-else:
-    CSRF_TRUSTED_ORIGINS = [f"https://{h}" for h in ALLOWED_HOSTS if h not in ('127.0.0.1', 'localhost')]
+CSRF_TRUSTED_ORIGINS = [u.strip() for u in env_csrf.split(',')] if env_csrf else [f"https://{h}" for h in ALLOWED_HOSTS if h not in ('127.0.0.1', 'localhost')]
 
 # ===== INSTALLED APPS =====
 INSTALLED_APPS = [
@@ -83,13 +76,10 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'Banquet.wsgi.application'
 
-# ===== DATABASE CONFIGURATION (Supabase PostgreSQL with local SQLite fallback) =====
-# Expect DATABASE_URL in the form provided by Supabase, e.g.
-# postgres://USER:PASSWORD@HOST:PORT/DB
-db_url = os.getenv('DATABASE_URL')
+# ===== DATABASE CONFIGURATION =====
+db_url = os.getenv('DATABASE_URL', 'postgresql://postgres:S%40ksham12%4009@db.yvkmaphcwfuzglxbvfhw.supabase.co:5432/postgres')
 use_database_url = os.getenv('USE_DATABASE_URL', '0') == '1'
 
-# In local/dev, default to SQLite even if DATABASE_URL exists, unless explicitly forced
 if ENVIRONMENT in ['local', 'dev', 'development'] and not use_database_url:
     DATABASES = {
         'default': {
@@ -98,17 +88,13 @@ if ENVIRONMENT in ['local', 'dev', 'development'] and not use_database_url:
         }
     }
 else:
-    # Ensure SSL is required outside local envs
-    ssl_require = ENVIRONMENT not in ['local', 'dev', 'development']
     DATABASES = {
         'default': dj_database_url.config(
-            default=db_url,
+            default='postgresql://postgres:S%40ksham12%4009@db.yvkmaphcwfuzglxbvfhw.supabase.co:5432/postgres',
             conn_max_age=600,
-            ssl_require=ssl_require,
+            ssl_require=True,  # Production me SSL required
         )
     }
-
-
 
 # ===== PASSWORD VALIDATION =====
 AUTH_PASSWORD_VALIDATORS = [
@@ -137,15 +123,11 @@ MEDIA_ROOT = BASE_DIR / 'media'
 # ===== DEFAULT PRIMARY KEY FIELD TYPE =====
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-# ===== SECURITY SETTINGS =====
-# Enable secure HTTPS-only settings when running in production
+# ===== SECURITY SETTINGS FOR PRODUCTION =====
 if ENVIRONMENT == 'production':
     SECURE_SSL_REDIRECT = True
     SESSION_COOKIE_SECURE = True
     CSRF_COOKIE_SECURE = True
-    # When running behind a proxy (Render, Heroku, etc.) set the header
-    # that tells Django the request was originally HTTPS. Render sets
-    # 'X-Forwarded-Proto' so configure Django to respect it.
     SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
     USE_X_FORWARDED_HOST = True
 else:
