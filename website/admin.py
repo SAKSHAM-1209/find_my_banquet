@@ -12,7 +12,7 @@ class BanquetImageInline(admin.TabularInline):
 # ===== BANQUET ADMIN =====
 @admin.register(Banquet)
 class BanquetAdmin(admin.ModelAdmin):
-    list_display = ('banquet_name', 'owner_name', 'email', 'phone', 'capacity', 'location')
+    list_display = ('banquet_name', 'owner', 'owner_name', 'email', 'phone', 'capacity', 'location')
     inlines = [BanquetImageInline]
 
 # ===== BANQUET IMAGE ADMIN =====

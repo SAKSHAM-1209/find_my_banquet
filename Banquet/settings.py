@@ -17,7 +17,7 @@ DEBUG = os.getenv('ENVIRONMENT', 'local').lower() == 'local'
 ENVIRONMENT = os.getenv('ENVIRONMENT', 'local').lower()
 
 # ===== HOSTS =====
-ALLOWED_HOSTS = [
+DEFAULT_ALLOWED_HOSTS = [
     '127.0.0.1',
     'localhost',
     'find-my-banquet-6wqy.onrender.com',  # Render URL
@@ -25,11 +25,19 @@ ALLOWED_HOSTS = [
     'www.findmybanquet.com',
 ]
 
-CSRF_TRUSTED_ORIGINS = [
-    'https://find-my-banquet-6wqy.onrender.com',
-    'https://findmybanquet.com',
-    'https://www.findmybanquet.com',
-]
+# Allow overriding ALLOWED_HOSTS via environment variable (comma-separated)
+env_allowed = os.getenv('ALLOWED_HOSTS')
+if env_allowed:
+    ALLOWED_HOSTS = [h.strip() for h in env_allowed.split(',') if h.strip()]
+else:
+    ALLOWED_HOSTS = DEFAULT_ALLOWED_HOSTS
+
+# CSRF trusted origins (allow setting via env or default to known production hosts)
+env_csrf = os.getenv('CSRF_TRUSTED_ORIGINS')
+if env_csrf:
+    CSRF_TRUSTED_ORIGINS = [u.strip() for u in env_csrf.split(',') if u.strip()]
+else:
+    CSRF_TRUSTED_ORIGINS = [f"https://{h}" for h in ALLOWED_HOSTS if h not in ('127.0.0.1', 'localhost')]
 
 # ===== INSTALLED APPS =====
 INSTALLED_APPS = [
@@ -130,4 +138,12 @@ MEDIA_ROOT = BASE_DIR / 'media'
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 # ===== SECURITY SETTINGS =====
-SECURE_SSL_REDIRECT = False  # True in production with HTTPS
+# Enable secure HTTPS-only settings when running in production
+if ENVIRONMENT == 'production':
+    SECURE_SSL_REDIRECT = True
+    SESSION_COOKIE_SECURE = True
+    CSRF_COOKIE_SECURE = True
+else:
+    SECURE_SSL_REDIRECT = False
+    SESSION_COOKIE_SECURE = False
+    CSRF_COOKIE_SECURE = False

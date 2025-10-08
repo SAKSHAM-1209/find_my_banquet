@@ -114,7 +114,9 @@ def register_banquet(request):
         form = BanquetForm(request.POST, request.FILES)
         if form.is_valid():
             banquet = form.save(commit=False)
-            banquet.owner_name = request.user.get_full_name()  # ✅ set owner_name from logged-in user
+            # set owner (required FK) and owner_name from logged-in user
+            banquet.owner = request.user
+            banquet.owner_name = request.user.get_full_name()
             banquet.save()
             messages.success(request, '✅ Banquet registered successfully!')
             return redirect('banquet')
