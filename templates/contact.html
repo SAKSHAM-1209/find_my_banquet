@@ -81,7 +81,7 @@
   <!-- Contact Form -->
   <div class="contact-form">
     <h2>Send a Message</h2>
-    <form method="POST" novalidate>
+    <form id="contact-form" method="POST" novalidate>
       {% csrf_token %}
       {{ form.non_field_errors }}
 
@@ -105,6 +105,7 @@
 
 <!-- ===== FOOTER ===== -->
 {% include 'footer.html' %}
+<script src="{% static 'js/form-utils.js' %}"></script>
 <script src="{% static 'js/contact.js' %}"></script>
 </body>
 </html>

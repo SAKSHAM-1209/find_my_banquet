@@ -44,7 +44,7 @@
   <section class="schedule-section">
     <div class="schedule-card">
       <h2>📞 Schedule a Call</h2>
-      <form id="scheduleForm" method="POST" novalidate>
+      <form id="schedule-call-form" method="POST" novalidate>
         {% csrf_token %}
 
         <div class="form-group">
@@ -94,6 +94,7 @@
   {% include 'footer.html' %}
 
   <!-- ===== JS ===== -->
+  <script src="{% static 'js/form-utils.js' %}"></script>
   <script src="{% static 'js/schedule-call.js' %}"></script>
 </body>
 </html>

@@ -116,7 +116,7 @@
   <!-- ===== REGISTER FORM ===== -->
   <section class="register-section">
     <div class="container register-container">
-      <form method="POST" enctype="multipart/form-data">
+      <form id="banquet-form" method="POST" enctype="multipart/form-data">
         {% csrf_token %}
         {{ form.non_field_errors }}
 
@@ -147,6 +147,8 @@
 
   {% include 'footer.html' %}
 
+  <script src="{% static 'js/form-utils.js' %}"></script>
+  <script src="{% static 'js/banquet-register.js' %}"></script>
   <script>
     // ===== Adaptive file instructions =====
     const fileInput = document.getElementById('id_image');

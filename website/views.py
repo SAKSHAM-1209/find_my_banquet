@@ -1,11 +1,19 @@
 from django.shortcuts import render, redirect
-from django.contrib.auth import login, logout
+from django.contrib.auth import login, logout, authenticate
 from django.contrib import messages
 from django.http import JsonResponse
 from django.contrib.auth.decorators import login_required
-from .models import Banquet, BanquetImage
+from django.views.decorators.csrf import csrf_exempt
+from django.views.decorators.http import require_http_methods
+from django.core.exceptions import ValidationError
+import json
+import logging
+from .models import Banquet, BanquetImage, ScheduleCall, ContactMessage
 from .forms import SignUpForm, LoginForm, BanquetForm, ScheduleCallForm, ContactMessageForm
 from .constants import KANPUR_AREAS  # ✅ Predefined areas
+
+# Setup logging
+logger = logging.getLogger(__name__)
 
 # ===== LANDING PAGE =====
 def landing(request):
@@ -42,43 +50,65 @@ def banquet(request):
     return render(request, 'banquet.html', {'banquets': banquets})
 
 
-# ===== SIGNUP =====
+# ===== SIGNUP (AJAX Compatible) =====
 def signup_view(request):
     if request.method == 'POST':
-        form = SignUpForm(request.POST)
-        if form.is_valid():
-            user = form.save()
-            login(request, user)
-            messages.success(request, '✅ Account created successfully!')
+        try:
+            form = SignUpForm(request.POST)
+            if form.is_valid():
+                user = form.save()
+                login(request, user)
+                
+                # Handle venue/banquet creation if provided
+                venue_name = request.POST.get('venue_name')
+                venue_address = request.POST.get('venue_address')
+                venue_capacity = request.POST.get('venue_capacity')
+                venue_price = request.POST.get('venue_price')
 
-            # ✅ Owner fields check karte hain (List My Venue)
-            venue_name = request.POST.get('venue_name')
-            venue_address = request.POST.get('venue_address')
-            venue_capacity = request.POST.get('venue_capacity')
-            venue_price = request.POST.get('venue_price')
+                if venue_name and venue_address and venue_capacity and venue_price:
+                    try:
+                        Banquet.objects.create(
+                            owner=user,
+                            owner_name=user.get_full_name() or user.username,
+                            banquet_name=venue_name,
+                            email=user.email,
+                            phone="",
+                            capacity=int(venue_capacity),
+                            location=venue_address,
+                            google_link="",
+                            services=""
+                        )
+                    except Exception as e:
+                        logger.error(f"Banquet creation error: {e}")
 
-            # Agar user ne venue details diye hain, tabhi banquet create hoga
-            if venue_name and venue_address and venue_capacity and venue_price:
-                try:
-                    Banquet.objects.create(
-                        owner_name=user.get_full_name() or user.username,
-                        banquet_name=venue_name,
-                        email=user.email,
-                        phone="",
-                        capacity=int(venue_capacity),
-                        location=venue_address,
-                        google_link="",
-                        services=""
-                    )
-                    messages.success(request, '✅ Your banquet has been registered successfully!')
-                except Exception as e:
-                    print("Banquet creation error:", e)
-                    messages.error(request, "⚠ Error saving your banquet. Please try again.")
-
-            return redirect('landing')
-        else:
-            print("Signup form errors:", form.errors)
-            messages.error(request, 'Please correct the errors below.')
+                # AJAX Response
+                if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+                    return JsonResponse({
+                        'success': True,
+                        'message': '✅ Account created successfully!',
+                        'redirect': '/'
+                    })
+                
+                messages.success(request, '✅ Account created successfully!')
+                return redirect('landing')
+            else:
+                # AJAX Response for errors
+                if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+                    return JsonResponse({
+                        'success': False,
+                        'errors': form.errors,
+                        'message': 'Please correct the errors below.'
+                    })
+                
+                messages.error(request, 'Please correct the errors below.')
+        except Exception as e:
+            logger.error(f"Signup error: {e}")
+            if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+                return JsonResponse({
+                    'success': False,
+                    'message': 'An error occurred. Please try again.'
+                })
+            messages.error(request, 'An error occurred. Please try again.')
     else:
         form = SignUpForm()
 
@@ -87,17 +117,43 @@ def signup_view(request):
 
 
 
-# ===== LOGIN =====
+# ===== LOGIN (AJAX Compatible) =====
 def login_view(request):
     if request.method == 'POST':
-        form = LoginForm(request=request, data=request.POST)
-        if form.is_valid():
-            user = form.get_user()
-            login(request, user)
-            messages.success(request, 'Logged in successfully!')
-            return redirect('landing')
-        else:
-            messages.error(request, 'Invalid username or password.')
+        try:
+            form = LoginForm(request=request, data=request.POST)
+            if form.is_valid():
+                user = form.get_user()
+                login(request, user)
+                
+                # AJAX Response
+                if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+                    return JsonResponse({
+                        'success': True,
+                        'message': '✅ Logged in successfully!',
+                        'redirect': '/'
+                    })
+                
+                messages.success(request, '✅ Logged in successfully!')
+                return redirect('landing')
+            else:
+                # AJAX Response for errors
+                if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+                    return JsonResponse({
+                        'success': False,
+                        'errors': form.errors,
+                        'message': '⚠ Invalid username or password.'
+                    })
+                
+                messages.error(request, '⚠ Invalid username or password.')
+        except Exception as e:
+            logger.error(f"Login error: {e}")
+            if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+                return JsonResponse({
+                    'success': False,
+                    'message': 'An error occurred. Please try again.'
+                })
+            messages.error(request, 'An error occurred. Please try again.')
     else:
         form = LoginForm()
     return render(request, 'login.html', {'form': form})
@@ -110,29 +166,52 @@ def logout_view(request):
     return redirect('landing')
 
 
-# ===== BANQUET REGISTRATION =====
-
-
-@login_required(login_url='login')  # agar user login nahi hai to login page pe redirect
+# ===== BANQUET REGISTRATION (AJAX Compatible) =====
+@login_required(login_url='login')
 def register_banquet(request):
     if request.method == 'POST':
-        form = BanquetForm(request.POST)
-        files = request.FILES.getlist('image')  # multiple images handle
+        try:
+            form = BanquetForm(request.POST)
+            files = request.FILES.getlist('image')  # multiple images handle
 
-        if form.is_valid():
-            banquet = form.save(commit=False)
-            # owner is a required ForeignKey on Banquet — set it from the logged-in user
-            banquet.owner = request.user
-            banquet.owner_name = request.user.get_full_name() or request.user.username
-            banquet.save()
+            if form.is_valid():
+                banquet = form.save(commit=False)
+                banquet.owner = request.user
+                banquet.owner_name = request.user.get_full_name() or request.user.username
+                banquet.save()
 
-            for f in files:
-                BanquetImage.objects.create(banquet=banquet, image=f)
+                # Handle multiple images
+                for f in files:
+                    BanquetImage.objects.create(banquet=banquet, image=f)
 
-            messages.success(request, '✅ Banquet registered successfully with images!')
-            return redirect('landing')
-        else:
-            messages.error(request, 'Please correct the errors below.')
+                # AJAX Response
+                if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+                    return JsonResponse({
+                        'success': True,
+                        'message': '✅ Banquet registered successfully with images!',
+                        'redirect': '/'
+                    })
+                
+                messages.success(request, '✅ Banquet registered successfully with images!')
+                return redirect('landing')
+            else:
+                # AJAX Response for errors
+                if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+                    return JsonResponse({
+                        'success': False,
+                        'errors': form.errors,
+                        'message': 'Please correct the errors below.'
+                    })
+                
+                messages.error(request, 'Please correct the errors below.')
+        except Exception as e:
+            logger.error(f"Banquet registration error: {e}")
+            if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+                return JsonResponse({
+                    'success': False,
+                    'message': 'An error occurred. Please try again.'
+                })
+            messages.error(request, 'An error occurred. Please try again.')
     else:
         form = BanquetForm()
 
@@ -142,38 +221,81 @@ def register_banquet(request):
 
 
 
-# ===== SCHEDULE CALL =====
+# ===== SCHEDULE CALL (AJAX Compatible) =====
 def schedule_call(request):
     if request.method == 'POST':
-        form = ScheduleCallForm(request.POST)
-        if form.is_valid():
-            call = form.save()
+        try:
+            form = ScheduleCallForm(request.POST)
+            if form.is_valid():
+                call = form.save()
+                
+                # AJAX Response
+                if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+                    return JsonResponse({
+                        'success': True,
+                        'message': f"✅ Your call has been scheduled for {call.date} at {call.time_slot}."
+                    })
+                
+                messages.success(request, f"✅ Your call has been scheduled for {call.date} at {call.time_slot}.")
+                return redirect('landing')
+            else:
+                # AJAX Response for errors
+                if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+                    return JsonResponse({
+                        'success': False,
+                        'errors': form.errors,
+                        'message': 'Please correct the errors below.'
+                    })
+                
+                messages.error(request, 'Please correct the errors below.')
+        except Exception as e:
+            logger.error(f"Schedule call error: {e}")
             if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
                 return JsonResponse({
-                    'success': True,
-                    'message': f"✅ Your call has been scheduled for {call.date} at {call.time_slot}."
+                    'success': False,
+                    'message': 'An error occurred. Please try again.'
                 })
-            messages.success(request, 'Your call has been scheduled!')
-            return redirect('landing')
-        else:
-            if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
-                return JsonResponse({'success': False, 'error': form.errors.as_json()})
-            messages.error(request, 'Please correct the errors below.')
+            messages.error(request, 'An error occurred. Please try again.')
     else:
         form = ScheduleCallForm()
     return render(request, 'schedule-call.html', {'form': form})
 
 
-# ===== CONTACT US =====
+# ===== CONTACT US (AJAX Compatible) =====
 def contact_us(request):
     if request.method == 'POST':
-        form = ContactMessageForm(request.POST)
-        if form.is_valid():
-            form.save()
-            messages.success(request, 'Your message has been sent!')
-            return redirect('landing')
-        else:
-            messages.error(request, 'Please correct the errors below.')
+        try:
+            form = ContactMessageForm(request.POST)
+            if form.is_valid():
+                form.save()
+                
+                # AJAX Response
+                if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+                    return JsonResponse({
+                        'success': True,
+                        'message': '✅ Your message has been sent successfully!'
+                    })
+                
+                messages.success(request, '✅ Your message has been sent successfully!')
+                return redirect('landing')
+            else:
+                # AJAX Response for errors
+                if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+                    return JsonResponse({
+                        'success': False,
+                        'errors': form.errors,
+                        'message': 'Please correct the errors below.'
+                    })
+                
+                messages.error(request, 'Please correct the errors below.')
+        except Exception as e:
+            logger.error(f"Contact form error: {e}")
+            if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+                return JsonResponse({
+                    'success': False,
+                    'message': 'An error occurred. Please try again.'
+                })
+            messages.error(request, 'An error occurred. Please try again.')
     else:
         form = ContactMessageForm()
     return render(request, 'contact.html', {'form': form})

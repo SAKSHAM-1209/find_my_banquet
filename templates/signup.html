@@ -84,7 +84,7 @@
           </div>
 
           <!-- Signup Form -->
-          <form id="signupForm" method="POST" enctype="multipart/form-data"
+          <form id="signup-form" method="POST" enctype="multipart/form-data"
             novalidate>
             {% csrf_token %}
 
@@ -188,6 +188,8 @@
 
     {% include 'footer.html' %}
 
+   <script src="{% static 'js/form-utils.js' %}"></script>
+   <script src="{% static 'js/signup.js' %}"></script>
    <script>
   // ===== Role Selection =====
   const findBtn = document.getElementById('findVenueBtn');
