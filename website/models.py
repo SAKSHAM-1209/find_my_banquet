@@ -16,8 +16,7 @@ class Banquet(models.Model):
 
     def __str__(self):
         return self.banquet_name
-<<<<<<< HEAD
-=======
+
 
 
 # ===== VENUE MODEL (owners can list venues) =====
@@ -31,7 +30,7 @@ class Venue(models.Model):
 
     def __str__(self):
         return self.name
->>>>>>> 18f3a35ccb2d3b93543a75b57ad055f336e0b7af
+
 
 # ===== BANQUET IMAGES =====
 class BanquetImage(models.Model):
