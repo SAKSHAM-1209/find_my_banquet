@@ -2,11 +2,9 @@ from django.db import models
 from django.utils.html import mark_safe
 from django.contrib.auth.models import User
 
-owner = models.ForeignKey(User, on_delete=models.CASCADE)
-
-
 # ===== BANQUET MODEL =====
 class Banquet(models.Model):
+    owner = models.ForeignKey(User, on_delete=models.CASCADE)  # Proper owner link
     owner_name = models.CharField(max_length=100)
     banquet_name = models.CharField(max_length=100)
     email = models.EmailField()
@@ -18,10 +16,6 @@ class Banquet(models.Model):
 
     def __str__(self):
         return self.banquet_name
-   
-owner = models.ForeignKey(User, on_delete=models.CASCADE)
-
-
 
 # ===== BANQUET IMAGES =====
 class BanquetImage(models.Model):
@@ -37,7 +31,6 @@ class BanquetImage(models.Model):
         return "No Image"
     image_tag.short_description = 'Image Preview'
 
-
 # ===== SCHEDULE CALL MODEL =====
 class ScheduleCall(models.Model):
     name = models.CharField(max_length=100)
@@ -51,7 +44,6 @@ class ScheduleCall(models.Model):
 
     def __str__(self):
         return f"{self.name} - {self.date}"
-
 
 # ===== CONTACT MESSAGE MODEL =====
 class ContactMessage(models.Model):

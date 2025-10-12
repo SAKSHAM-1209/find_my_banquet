@@ -1,5 +1,7 @@
+# ===== IMPORTS =====
 from pathlib import Path
 import os
+import dj_database_url
 from dotenv import load_dotenv
 
 # ===== LOAD .env =====
@@ -8,18 +10,18 @@ load_dotenv()
 # ===== BASE DIR =====
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-# ===== SECURITY =====
-SECRET_KEY = os.getenv('SECRET_KEY', 'django-insecure-fallback-secret-key')
-DEBUG = True  # Always keep False in production
-
 # ===== ENVIRONMENT =====
 ENVIRONMENT = os.getenv('ENVIRONMENT', 'local').lower()
+
+# ===== SECURITY =====
+SECRET_KEY = os.getenv('SECRET_KEY', 'django-insecure-fallback-secret-key')
+DEBUG = ENVIRONMENT == 'local'
 
 # ===== HOSTS =====
 ALLOWED_HOSTS = [
     '127.0.0.1',
     'localhost',
-    'find-my-banquet-6wqy.onrender.com',  # Render URL
+    'find-my-banquet-6wqy.onrender.com',
     'findmybanquet.com',
     'www.findmybanquet.com',
 ]
@@ -53,7 +55,9 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
+# ===== URLS & WSGI =====
 ROOT_URLCONF = 'Banquet.urls'
+WSGI_APPLICATION = 'Banquet.wsgi.application'
 
 # ===== TEMPLATES =====
 TEMPLATES = [
@@ -72,9 +76,8 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = 'Banquet.wsgi.application'
-
-# ===== DATABASE (SQLite for all environments) =====
+# ===== DATABASE CONFIGURATION =====
+# Use SQLite for both local and production (simple + Render-compatible)
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
@@ -110,4 +113,5 @@ MEDIA_ROOT = BASE_DIR / 'media'
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 # ===== SECURITY SETTINGS =====
-SECURE_SSL_REDIRECT = False  # Set True if using HTTPS in production
+# In Render (HTTPS), you can set this True later
+SECURE_SSL_REDIRECT = ENVIRONMENT == 'production'

@@ -14,7 +14,7 @@ media/
 
 # ===== SQLite DB =====
 *.sqlite3
-db.sqlite3
+# db.sqlite3  <-- ❌ Commented out so it gets pushed
 
 # ===== Environment / Virtual Envs =====
 .env
