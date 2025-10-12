@@ -16,6 +16,22 @@ class Banquet(models.Model):
 
     def __str__(self):
         return self.banquet_name
+<<<<<<< HEAD
+=======
+
+
+# ===== VENUE MODEL (owners can list venues) =====
+class Venue(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='venues')
+    name = models.CharField(max_length=100)
+    address = models.CharField(max_length=255)
+    capacity = models.IntegerField()
+    price = models.DecimalField(max_digits=10, decimal_places=2)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return self.name
+>>>>>>> 18f3a35ccb2d3b93543a75b57ad055f336e0b7af
 
 # ===== BANQUET IMAGES =====
 class BanquetImage(models.Model):

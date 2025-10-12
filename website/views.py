@@ -121,6 +121,8 @@ def register_banquet(request):
 
         if form.is_valid():
             banquet = form.save(commit=False)
+            # owner is a required ForeignKey on Banquet — set it from the logged-in user
+            banquet.owner = request.user
             banquet.owner_name = request.user.get_full_name() or request.user.username
             banquet.save()
 

@@ -1,7 +1,6 @@
 # ===== IMPORTS =====
 from pathlib import Path
 import os
-import dj_database_url
 from dotenv import load_dotenv
 
 # ===== LOAD .env =====
@@ -12,24 +11,28 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 # ===== ENVIRONMENT =====
 ENVIRONMENT = os.getenv('ENVIRONMENT', 'local').lower()
+DEBUG = os.getenv('DEBUG', 'true').lower() in ('1', 'true', 'yes')
 
 # ===== SECURITY =====
 SECRET_KEY = os.getenv('SECRET_KEY', 'django-insecure-fallback-secret-key')
-DEBUG = ENVIRONMENT == 'local'
 
-# ===== HOSTS =====
-ALLOWED_HOSTS = [
+# ===== ALLOWED HOSTS =====
+DEFAULT_ALLOWED_HOSTS = [
     '127.0.0.1',
     'localhost',
     'find-my-banquet-6wqy.onrender.com',
+    'find-banquet.onrender.com',
     'findmybanquet.com',
     'www.findmybanquet.com',
 ]
 
-CSRF_TRUSTED_ORIGINS = [
-    'https://find-my-banquet-6wqy.onrender.com',
-    'https://findmybanquet.com',
-    'https://www.findmybanquet.com',
+env_allowed = os.getenv('ALLOWED_HOSTS')
+ALLOWED_HOSTS = [h.strip() for h in env_allowed.split(',')] if env_allowed else DEFAULT_ALLOWED_HOSTS
+
+# ===== CSRF TRUSTED ORIGINS =====
+env_csrf = os.getenv('CSRF_TRUSTED_ORIGINS')
+CSRF_TRUSTED_ORIGINS = [u.strip() for u in env_csrf.split(',')] if env_csrf else [
+    f"https://{h}" for h in ALLOWED_HOSTS if h not in ('127.0.0.1', 'localhost')
 ]
 
 # ===== INSTALLED APPS =====
@@ -77,7 +80,7 @@ TEMPLATES = [
 ]
 
 # ===== DATABASE CONFIGURATION =====
-# Use SQLite for both local and production (simple + Render-compatible)
+# SQLite for both local and production
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
@@ -113,5 +116,14 @@ MEDIA_ROOT = BASE_DIR / 'media'
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 # ===== SECURITY SETTINGS =====
-# In Render (HTTPS), you can set this True later
-SECURE_SSL_REDIRECT = ENVIRONMENT == 'production'
+if ENVIRONMENT == 'production':
+    SECURE_SSL_REDIRECT = True
+    SESSION_COOKIE_SECURE = True
+    CSRF_COOKIE_SECURE = True
+    SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+    USE_X_FORWARDED_HOST = True
+else:
+    SECURE_SSL_REDIRECT = False
+    SESSION_COOKIE_SECURE = False
+    CSRF_COOKIE_SECURE = False
+

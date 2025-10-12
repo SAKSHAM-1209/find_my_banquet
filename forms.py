@@ -61,7 +61,7 @@ class BanquetForm(forms.ModelForm):
         model = Banquet
         fields = [
             'banquet_name', 'owner_name', 'email', 'phone', 'capacity',
-            'location', 'google_link', 'image'
+            'location', 'google_link'
         ]
         widgets = {
             'banquet_name': forms.TextInput(attrs={'class': 'form-input', 'placeholder': 'Banquet Name'}),
@@ -71,7 +71,6 @@ class BanquetForm(forms.ModelForm):
             'capacity': forms.NumberInput(attrs={'class': 'form-input', 'placeholder': 'Capacity'}),
             'location': forms.TextInput(attrs={'class': 'form-input', 'placeholder': 'Location'}),
             'google_link': forms.URLInput(attrs={'class': 'form-input', 'placeholder': 'Google Link'}),
-            'image': forms.ClearableFileInput(attrs={'class': 'form-input'}),  # ✅ image
         }
 
 # ===== SCHEDULE CALL FORM =====
