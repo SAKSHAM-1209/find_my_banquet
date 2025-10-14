@@ -21,7 +21,6 @@
     </div>
   {% endif %}
 
-
   <!-- ===== HEADER ===== -->
   <header class="header">
     <div class="container header-inner">
@@ -67,14 +66,15 @@
           <label for="{{ form.date.id_for_label }}">Preferred Date</label>
         </div>
 
-        <div class="form-group">
-          {{ form.time_slot }}
-          <label for="{{ form.time_slot.id_for_label }}">Time Slot</label>
-        </div>
-
+        <!-- ✅ Move REASON above TIME SLOT -->
         <div class="form-group">
           {{ form.reason }}
           <label for="{{ form.reason.id_for_label }}">Reason</label>
+        </div>
+
+        <div class="form-group">
+          {{ form.time_slot }}
+          <label for="{{ form.time_slot.id_for_label }}">Time Slot</label>
         </div>
 
         <div class="form-group">
