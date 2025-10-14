@@ -1,4 +1,5 @@
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', function () {
+
     // ===== FORM HANDLER =====
     const scheduleForm = new FormHandler('schedule-call-form', {
         showSuccessMessage: true,
@@ -18,13 +19,13 @@ document.addEventListener('DOMContentLoaded', function() {
         const todayStr = new Date().toISOString().split('T')[0];
         dateField.setAttribute('min', todayStr);
 
-        dateField.addEventListener('change', function() {
+        dateField.addEventListener('change', function () {
             const selectedDate = new Date(this.value);
             const today = new Date();
             today.setHours(0, 0, 0, 0);
 
             if (selectedDate < today) {
-                this.setCustomValidity('Please select a future date');
+                this.setCustomValidity('Please select a valid future date.');
             } else {
                 this.setCustomValidity('');
             }
@@ -70,7 +71,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
         const slots = slotsMap[reason] || slotsMap['default'];
 
-        // Clear previous options
+        // Clear existing options
         timeSlotField.innerHTML = '';
 
         // Add default placeholder
@@ -88,26 +89,28 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
-    // ===== REASON FIELD LISTENER =====
+    // ===== INITIALIZE TIME SLOTS ON LOAD =====
     if (reasonField) {
-        reasonField.addEventListener('change', function() {
+        updateTimeSlots(reasonField.value || 'default');
+
+        reasonField.addEventListener('change', function () {
             updateTimeSlots(this.value);
         });
-
-        // Initialize on page load
-        updateTimeSlots(reasonField.value || 'default');
+    } else {
+        // fallback if reason not found
+        updateTimeSlots('default');
     }
 
-    // ===== PHONE FIELD =====
+    // ===== PHONE FIELD VALIDATION =====
     if (phoneField) {
-        phoneField.addEventListener('input', function() {
+        phoneField.addEventListener('input', function () {
             let value = this.value.replace(/\D/g, '');
-            if (value.length > 10) value = value.substring(0, 10);
+            if (value.length > 10) value = value.slice(0, 10);
             this.value = value;
         });
     }
 
-    // ===== NOTES COUNTER =====
+    // ===== NOTES CHARACTER COUNTER =====
     if (notesField) {
         const maxLength = 500;
         const counter = document.createElement('div');
@@ -125,33 +128,42 @@ document.addEventListener('DOMContentLoaded', function() {
         updateCounter();
     }
 
-    // ===== FORM SUBMIT VALIDATION =====
-    scheduleForm.form.addEventListener('submit', function(e) {
-        const date = new Date(dateField.value);
-        const thirtyDaysFromNow = new Date();
-        thirtyDaysFromNow.setDate(thirtyDaysFromNow.getDate() + 30);
+    // ===== FORM SUBMISSION VALIDATION =====
+    if (scheduleForm && scheduleForm.form) {
+        scheduleForm.form.addEventListener('submit', function (e) {
+            const dateValue = dateField?.value;
+            const timeSlotValue = timeSlotField?.value;
 
-        // Weekend warning
-        if (date.getDay() === 0 || date.getDay() === 6) {
-            if (!confirm('You selected a weekend. Are you sure?')) {
+            if (!dateValue) {
+                alert('Please select a date.');
                 e.preventDefault();
                 return;
             }
-        }
 
-        // Future date check
-        if (date > thirtyDaysFromNow) {
-            if (!confirm('You selected a date more than 30 days in the future. Are you sure?')) {
+            if (!timeSlotValue) {
+                alert('Please select a time slot.');
                 e.preventDefault();
                 return;
             }
-        }
 
-        // Ensure time slot selected
-        if (!timeSlotField.value) {
-            alert('Please select a time slot.');
-            e.preventDefault();
-            return;
-        }
-    });
+            const date = new Date(dateValue);
+            const today = new Date();
+            const thirtyDaysFromNow = new Date();
+            thirtyDaysFromNow.setDate(today.getDate() + 30);
+
+            if (date.getDay() === 0 || date.getDay() === 6) {
+                if (!confirm('You selected a weekend. Are you sure you want to continue?')) {
+                    e.preventDefault();
+                    return;
+                }
+            }
+
+            if (date > thirtyDaysFromNow) {
+                if (!confirm('You selected a date more than 30 days ahead. Continue?')) {
+                    e.preventDefault();
+                    return;
+                }
+            }
+        });
+    }
 });
